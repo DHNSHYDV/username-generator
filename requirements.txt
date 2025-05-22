@@ -1,3 +1,5 @@
 # Dependencies
 Flask==2.0.1  # Required for the web interface
+serverless-wsgi==3.0.1  # Required for Vercel serverless deployment
+gunicorn==20.1.0  # Production web server
 # The core username generator uses only Python standard library

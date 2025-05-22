@@ -10,6 +10,11 @@ from username_generator import UsernameGenerator
 app = Flask(__name__)
 generator = UsernameGenerator()
 
+# For Vercel serverless deployment
+from serverless_wsgi import handle_request
+def handler(event, context):
+    return handle_request(app, event, context)
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -57,4 +62,6 @@ def generate():
     return jsonify({'usernames': usernames})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Use environment port if available (for cloud platforms)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
