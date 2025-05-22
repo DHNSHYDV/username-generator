@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Username Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .options {
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        select, input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .results {
+            margin-top: 20px;
+        }
+        .username {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+        .error {
+            color: red;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Username Generator</h1>
+    
+    <div class="container">
+        <div class="options">
+            <div class="form-group">
+                <label for="method">Generation Method:</label>
+                <select id="method">
+                    <option value="adjective_noun">Adjective + Noun</option>
+                    <option value="random">Random String</option>
+                    <option value="themed">Themed Username</option>
+                    <option value="name_based">Based on Your Name</option>
+                    <option value="multiple">Multiple Suggestions</option>
+                </select>
+            </div>
+            
+            <div class="form-group method-option" id="random-options">
+                <label for="length">Length:</label>
+                <input type="number" id="length" min="4" max="20" value="8">
+            </div>
+            
+            <div class="form-group method-option" id="themed-options">
+                <label for="theme">Theme:</label>
+                <select id="theme">
+                    <option value="nature">Nature</option>
+                    <option value="tech">Technology</option>
+                    <option value="fantasy">Fantasy</option>
+                    <option value="fiction">Fiction</option>
+                    <option value="movie">Movie</option>
+                </select>
+            </div>
+            
+            <div class="form-group method-option" id="name-options">
+                <label for="name">Your Name:</label>
+                <input type="text" id="name" placeholder="Enter your name">
+            </div>
+            
+            <div class="form-group method-option" id="multiple-options">
+                <label for="count">Number of Suggestions:</label>
+                <input type="number" id="count" min="1" max="20" value="5">
+            </div>
+            
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="with-number" checked>
+                    Include a random number
+                </label>
+            </div>
+            
+            <button id="generate-btn">Generate Username</button>
+        </div>
+        
+        <div id="error-message" class="error hidden"></div>
+        
+        <div class="results">
+            <h2>Results:</h2>
+            <div id="username-results"></div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show/hide method-specific options based on selected method
+            function updateMethodOptions() {
+                const method = document.getElementById('method').value;
+                
+                // Hide all method options first
+                document.querySelectorAll('.method-option').forEach(el => {
+                    el.style.display = 'none';
+                });
+                
+                // Show relevant options based on selected method
+                if (method === 'random') {
+                    document.getElementById('random-options').style.display = 'block';
+                } else if (method === 'themed') {
+                    document.getElementById('themed-options').style.display = 'block';
+                } else if (method === 'name_based') {
+                    document.getElementById('name-options').style.display = 'block';
+                } else if (method === 'multiple') {
+                    document.getElementById('multiple-options').style.display = 'block';
+                    document.getElementById('themed-options').style.display = 'block';
+                }
+            }
+            
+            // Initialize method options
+            updateMethodOptions();
+            
+            // Update method options when method is changed
+            document.getElementById('method').addEventListener('change', updateMethodOptions);
+            
+            // Generate username when button is clicked
+            document.getElementById('generate-btn').addEventListener('click', function() {
+                const method = document.getElementById('method').value;
+                const withNumber = document.getElementById('with-number').checked;
+                const errorElement = document.getElementById('error-message');
+                const resultsElement = document.getElementById('username-results');
+                
+                // Clear previous results and errors
+                errorElement.classList.add('hidden');
+                errorElement.textContent = '';
+                resultsElement.innerHTML = '';
+                
+                // Prepare request data
+                const data = {
+                    method: method,
+                    with_number: withNumber
+                };
+                
+                // Add method-specific data
+                if (method === 'random') {
+                    data.length = parseInt(document.getElementById('length').value);
+                } else if (method === 'themed') {
+                    data.theme = document.getElementById('theme').value;
+                } else if (method === 'name_based') {
+                    data.name = document.getElementById('name').value;
+                    
+                    if (!data.name) {
+                        errorElement.textContent = 'Please enter your name.';
+                        errorElement.classList.remove('hidden');
+                        return;
+                    }
+                } else if (method === 'multiple') {
+                    data.count = parseInt(document.getElementById('count').value);
+                    data.theme = document.getElementById('theme').value;
+                }
+                
+                // Send request to server
+                fetch('/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.error || 'Unknown error occurred');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.usernames && data.usernames.length > 0) {
+                        data.usernames.forEach(username => {
+                            const usernameElement = document.createElement('div');
+                            usernameElement.className = 'username';
+                            usernameElement.textContent = username;
+                            resultsElement.appendChild(usernameElement);
+                        });
+                    }
+                })
+                .catch(error => {
+                    errorElement.textContent = error.message;
+                    errorElement.classList.remove('hidden');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

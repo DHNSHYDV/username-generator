@@ -1,0 +1,3 @@
+# Dependencies
+Flask==2.0.1  # Required for the web interface
+# The core username generator uses only Python standard library
