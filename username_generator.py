@@ -10,7 +10,7 @@ class UsernameGenerator:
         self.adjectives = [
             "happy", "clever", "brave", "mighty", "cool", "swift", "amazing",
             "brilliant", "dazzling", "eager", "fantastic", "gentle", "honest",
-            "incredible", "jolly", "kind", "lively", "mysterious", "noble",
+            "incredible", "jolly", "kind", "lively", "mysterious", "noble", "majestic",
             "optimistic", "powerful", "quirky", "remarkable", "shining", "talented",
             "unique", "vibrant", "witty", "excellent", "zealous"
         ]
