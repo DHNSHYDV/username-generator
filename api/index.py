@@ -3,6 +3,7 @@ import os
 import sys
 import random
 import string
+from datetime import datetime
 
 # Add the parent directory to the path so we can import the username_generator module
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -13,7 +14,8 @@ generator = UsernameGenerator()
 
 @app.route('/', methods=['GET'])
 def index():
-    return render_template('index.html')
+    year = datetime.now().year
+    return render_template('index.html', current_year=year)
 
 @app.route('/generate', methods=['POST'])
 def generate():
