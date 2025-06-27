@@ -63,5 +63,6 @@ def generate():
 
 if __name__ == '__main__':
     # Use environment port if available (for cloud platforms)
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=False)
+    port = int(os.environ.get("PORT", 5002))
+    print(f"Starting server on port {port}...")
+    app.run(host="0.0.0.0", port=port, debug=True)
